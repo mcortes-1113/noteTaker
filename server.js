@@ -1,49 +1,48 @@
-// ==============================================================================
-// DEPENDENCIES
-// Series of npm packages that we will use to give our server useful functionality
-// ==============================================================================
-
+var fs = require('fs');
 var express = require("express");
 var path = require("path");
+// const apiRoutes = require('./routes/apiRoutes');
+// const htmlRoutes = require('./routes/htmlRoutes');
 
-
-// ==============================================================================
-// EXPRESS CONFIGURATION
-// This sets up the basic properties for our express server
-// ==============================================================================
-
-// Tells node that we are creating an "express" server
+// Sets up the Express App
+// =============================================================
 var app = express();
-
-// Sets an initial port. We"ll use this later in our listener
-var PORT = process.env.PORT || 10000;
+var PORT = process.env.PORT||3600;
 
 // Sets up the Express app to handle data parsing
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(express.static('/public'));
+// app.use('/api', apiRoutes);
+// app.use('/', htmlRoutes);
 
-// ================================================================================
-// ROUTER
-// The below points our server to a series of "route" files.
-// These routes give our server a "map" of how to respond when users visit or request data from various URLs.
-// ================================================================================
-
-require("./apiRoutes")(app);
-require("./htmlRoutes")(app);
-
-app.get("/notes", function(req, res) {
+app.get("/notes", (req, res) => {
   res.sendFile(path.join(__dirname, "notes.html"));
 });
 
-app.get("*", function(req, res) {
+app.get('/api/notes', (req, res) => {
+  res.sendFile(path.join(__dirname, '/public', 'db.json'));
+});
+
+app.post('/api/notes', (req, res) => {
+  var newNote = req.body;
+  // var data = fs.readFileSync('db.json');
+  // var json = JSON.parse(data);
+  // json.push();
+  // fs.writeFile("db.json", JSON.stringify(json))
+  res.json(newNote);
+});
+
+// app.delete('/api/notes/:id', (req, res) => {
+  // var json = { ... };
+  // var key = "foo";
+  // delete json[key];
+// })
+
+app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "index.html"));
 });
 
-// =============================================================================
-// LISTENER
-// The below code effectively "starts" our server
-// =============================================================================
-
 app.listen(PORT, function() {
-  console.log("App listening on PORT: " + PORT);
+  console.log("App listening on PORT " + PORT);
 });
