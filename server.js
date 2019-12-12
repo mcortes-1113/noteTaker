@@ -20,13 +20,20 @@ app.get('/api/notes', (req, res) => {
   res.sendFile(path.join(__dirname, '/public', 'db.json'));
 });
 
+app.post('/api/notes', (req, res) => {
+  var allNotes = require('./public/db.json');
+  var newNote = req.body;
+  allNotes.push(newNote);
+  fs.writeFile ('./public/db.json', JSON.stringify(allNotes), function(err) {
+    if (err) throw err;
+    console.log('complete');
+    }
+  )
+});
+
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '/public', 'index.html'));
 });
-
-// app.post('/api/notes', (req, res) => {
-//   res.json(newNote);
-// });
 
 // app.delete('/api/notes/:id', (req, res) => {
 // })
